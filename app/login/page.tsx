@@ -1,79 +1,129 @@
+"use client";
 
+import React, { useState } from "react";
 
+export default function LoginPage() {
+  const [username, setUsername] = useState("");
+  const[password,setPassword]=useState("")
 
-export default function Login() {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: handle your login / signup logic here
+
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-950 bg-[radial-gradient(circle_at_top,_#1f2937_0,_#020617_45%,_#000_100%)]">
-      <div className="relative">
-        <div className="mx-auto w-full max-w-md rounded-2xl bg-white/90 shadow-2xl ring-1 ring-black/5 backdrop-blur-sm">
-          <div className="px-6 pt-6 pb-5 border-b border-slate-100">
-            <p className="text-center text-sm font-semibold text-slate-900">
-              Log in or sign up
-            </p>
+    <main className="min-h-screen w-full bg-slate-900/60 flex items-center justify-center">
+      {/* blurred background mock (optional) */}
+      <div className="fixed inset-0 -z-10 bg-slate-900">
+        <div className="h-full w-full bg-[radial-gradient(circle_at_top,_#4f46e5_0,_#020617_55%)] opacity-40" />
+      </div>
+
+      {/* Modal card */}
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl px-8 py-6 border border-slate-100">
+        {/* Close icon row */}
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-3xl font-medium text-black mx-auto mr-5 font-serif ">
+        Login
+          </span>
+          {/* fake close icon to match UI */}
+          <button
+            type="button"
+            className="ml-auto text-slate-400 hover:text-slate-600 text-xl leading-none"
+          >
+            ×
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Continue with wallet */}
+          <button
+            type="button"
+            className="w-full rounded-lg border border-slate-200 bg-white py-2.5 text-sm font-medium text-slate-800 hover:bg-slate-50 transition"
+          >
+            Continue with a wallet
+          </button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 text-xs text-slate-400">
+            <div className="h-px flex-1 bg-slate-200" />
+            <span>Or</span>
+            <div className="h-px flex-1 bg-slate-200" />
           </div>
 
-          <div className="px-6 py-5 space-y-4">
-            <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-900 transition hover:bg-slate-100">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] text-white">
-                W
-              </span>
-              <span>Continue with a wallet</span>
-            </button>
-
-            <div className="flex items-center gap-3 text-xs text-slate-400">
-              <div className="h-px flex-1 bg-slate-200" />
-              <span>or</span>
-              <div className="h-px flex-1 bg-slate-200" />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="email" className="sr-only">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <button className="w-full rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+          {/* Email input + continue */}
+          <div className="space-y-2">
+            <input
+              type="text"
+              required
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent"
+            />
+            <input
+              type="email"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your email"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent"
+            />
+            <button
+              type="submit"
+              className="w-full rounded-lg bg-violet-500 py-2.5 text-sm font-medium text-white hover:bg-violet-600 transition"
+            >
               Continue
             </button>
-
-            <div className="flex items-center justify-center gap-3 pt-1">
-              <button className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-xs font-medium text-slate-900 hover:bg-slate-50">
-                A
-              </button>
-              <button className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-xs font-medium text-slate-900 hover:bg-slate-50">
-                G
-              </button>
-            </div>
           </div>
 
-          <div className="px-6 pb-5 pt-1">
-            <p className="text-center text-[11px] leading-relaxed text-slate-400">
-              By logging in, you agree to our{" "}
-              <a
-                href="#"
-                className="font-medium text-slate-500 underline underline-offset-2"
-              >
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a
-                href="#"
-                className="font-medium text-slate-500 underline underline-offset-2"
-              >
-                Privacy Policy
-              </a>
-              .
-            </p>
+          {/* Divider */}
+          <div className="flex items-center gap-3 text-xs text-slate-400">
+            <div className="h-px flex-1 bg-slate-200" />
+            <span>Or</span>
+            <div className="h-px flex-1 bg-slate-200" />
           </div>
-        </div>
+
+          {/* Google button */}
+          <button
+            type="button"
+            className="w-full rounded-lg border border-slate-200 bg-white py-2.5 text-sm font-medium text-slate-800 flex items-center justify-center gap-2 hover:bg-slate-50 transition"
+          >
+            {/* simple Google dot (replace with real logo if you want) */}
+            <span className="h-4 w-4 rounded-full bg-blue-500" />
+            <span>Continue with Google</span>
+          </button>
+
+          {/* Social icons row */}
+          <div className="flex items-center justify-center gap-5 pt-1">
+            <button
+              type="button"
+              className="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center text-xs font-semibold text-slate-800 hover:bg-slate-50"
+            >
+              
+            </button>
+            <button
+              type="button"
+              className="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center text-xs font-semibold text-slate-800 hover:bg-slate-50"
+            >
+              D
+            </button>
+            <button
+              type="button"
+              className="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center text-xs font-semibold text-slate-800 hover:bg-slate-50"
+            >
+              X
+            </button>
+          </div>
+        </form>
+
+        {/* Terms text */}
+        <p className="mt-4 text-[10px] text-center text-slate-400 leading-snug">
+          By logging in, you agree to our{" "}
+          <span className="underline cursor-pointer">Terms of Service</span> &amp;{" "}
+          <span className="underline cursor-pointer">Privacy Policy</span>.
+        </p>
       </div>
-    </div>
+    </main>
   );
 }
-
