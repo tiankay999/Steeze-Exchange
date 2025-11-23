@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React, { useState } from "react";
 
 export default function SignupPage() {
@@ -31,7 +32,7 @@ export default function SignupPage() {
   };
 
   return (
-    <main className="min-h-screen w-full bg-slate-900/60 flex items-center justify-center">
+    <main className="min-h-screen w-full bg-slate-900/60 flex items-center justify-center bg-[url('/blurry.png')]">
       {/* blurred background */}
       <div className="fixed inset-0 -z-10 bg-slate-900">
         <div className="h-full w-full bg-[radial-gradient(circle_at_top,_#4f46e5_0,_#020617_55%)] opacity-40" />
@@ -138,6 +139,7 @@ export default function SignupPage() {
           )}
 
           {/* Submit */}
+          <Link  href="/login" className="text-black italic  ">Already have an account?? Login</Link>
           <button
             type="submit"
             className="w-full rounded-lg bg-violet-500 py-2.5 text-sm font-medium text-white hover:bg-violet-600 transition mt-1"

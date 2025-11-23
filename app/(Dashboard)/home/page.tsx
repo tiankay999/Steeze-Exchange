@@ -61,7 +61,7 @@ const initialMarkets: Market[] = [
     name: "Bitcoin",
     iconUrl:
       "https://placehold.co/32x32/b89738/ffffff?text=B",
-    price: 68750.23,
+    price: 94750.23,
     change24h: 1.25,
     volume: "2.5M",
     high: 69120,
@@ -215,11 +215,10 @@ const MarketList: React.FC<MarketListProps> = ({
         {filteredMarkets.map((market) => (
           <div
             key={market.symbol}
-            className={`grid grid-cols-[1fr_auto_auto] gap-2 px-3 py-2 cursor-pointer items-center transition-colors duration-200 ${
-              market.symbol === activeMarket.symbol
-                ? "bg-yellow-100"
-                : "hover:bg-gray-100"
-            }`}
+            className={`grid grid-cols-[1fr_auto_auto] gap-2 px-3 py-2 cursor-pointer items-center transition-colors duration-200 ${market.symbol === activeMarket.symbol
+              ? "bg-yellow-100"
+              : "hover:bg-gray-100"
+              }`}
             onClick={() => onSelectMarket(market)}
           >
             {/* pair */}
@@ -247,11 +246,10 @@ const MarketList: React.FC<MarketListProps> = ({
 
             {/* price */}
             <span
-              className={`text-right text-sm ${
-                market.change24h >= 0
-                  ? "text-green-600"
-                  : "text-red-600"
-              }`}
+              className={`text-right text-sm ${market.change24h >= 0
+                ? "text-green-600"
+                : "text-red-600"
+                }`}
             >
               {market.price.toFixed(
                 market.price > 100 ? 2 : 4
@@ -260,11 +258,10 @@ const MarketList: React.FC<MarketListProps> = ({
 
             {/* 24h % */}
             <span
-              className={`text-right text-sm font-semibold w-14 ${
-                market.change24h >= 0
-                  ? "text-green-600"
-                  : "text-red-600"
-              }`}
+              className={`text-right text-sm font-semibold w-14 ${market.change24h >= 0
+                ? "text-green-600"
+                : "text-red-600"
+                }`}
             >
               {market.change24h >= 0 ? "+" : ""}
               {market.change24h.toFixed(2)}%
@@ -308,11 +305,10 @@ const ChartHeader: React.FC<{ market: Market }> = ({
         </div>
       </div>
       <div
-        className={`text-xl font-bold ml-4 ${
-          market.change24h >= 0
-            ? "text-green-600"
-            : "text-red-600"
-        }`}
+        className={`text-xl font-bold ml-4 ${market.change24h >= 0
+          ? "text-green-600"
+          : "text-red-600"
+          }`}
       >
         {market.price.toFixed(2)}
       </div>
@@ -324,11 +320,10 @@ const ChartHeader: React.FC<{ market: Market }> = ({
           24h Change:{" "}
         </span>
         <span
-          className={`font-semibold ${
-            market.change24h >= 0
-              ? "text-green-600"
-              : "text-red-600"
-          }`}
+          className={`font-semibold ${market.change24h >= 0
+            ? "text-green-600"
+            : "text-red-600"
+            }`}
         >
           {market.change24h >= 0 ? "+" : ""}
           {market.change24h.toFixed(2)}%
@@ -399,11 +394,10 @@ const ChartArea: React.FC = () => {
         {timeframes.map((tf) => (
           <button
             key={tf}
-            className={`px-3 py-1 text-xs rounded-full transition-colors ${
-              activeTimeframe === tf
-                ? "bg-yellow-600 text-white font-bold"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
+            className={`px-3 py-1 text-xs rounded-full transition-colors ${activeTimeframe === tf
+              ? "bg-yellow-600 text-white font-bold"
+              : "text-gray-600 hover:bg-gray-100"
+              }`}
             onClick={() => setActiveTimeframe(tf)}
           >
             {tf}
@@ -468,29 +462,34 @@ const ChartArea: React.FC = () => {
 // ---------- ORDER BOOK ----------
 
 const OrderBook: React.FC = () => {
-  const generateOrders = (isBuy: boolean): Order[] =>
-    Array.from({ length: 15 })
-      .map((_, i) => {
-        const priceBase = isBuy
-          ? 68700 - i * 5
-          : 68750 + i * 5;
-        const price = parseFloat(priceBase.toFixed(2));
-        const amount = parseFloat(
-          (Math.random() * 0.05 + 0.01).toFixed(4)
-        );
-        const total = parseFloat(
-          (price * amount).toFixed(2)
-        );
-        const depth = Math.min(100, (i + 1) * 6);
-        return { price, amount, total, depth };
-      })
-      .sort((a, b) =>
-        isBuy ? b.price - a.price : a.price - b.price
-      );
-
-  const bids = generateOrders(true);
-  const asks = generateOrders(false);
+  const [bids, setBids] = useState<Order[]>([]);
+  const [asks, setAsks] = useState<Order[]>([]);
   const currentPrice = 68735.5;
+
+  useEffect(() => {
+    const generateOrders = (isBuy: boolean): Order[] =>
+      Array.from({ length: 15 })
+        .map((_, i) => {
+          const priceBase = isBuy
+            ? 68700 - i * 5
+            : 68750 + i * 5;
+          const price = parseFloat(priceBase.toFixed(2));
+          const amount = parseFloat(
+            (Math.random() * 0.05 + 0.01).toFixed(4)
+          );
+          const total = parseFloat(
+            (price * amount).toFixed(2)
+          );
+          const depth = Math.min(100, (i + 1) * 6);
+          return { price, amount, total, depth };
+        })
+        .sort((a, b) =>
+          isBuy ? b.price - a.price : a.price - b.price
+        );
+
+    setBids(generateOrders(true));
+    setAsks(generateOrders(false));
+  }, []);
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-3 h-full flex flex-col">
@@ -585,11 +584,10 @@ const TradePanel: React.FC = () => {
     currentSide: "Buy" | "Sell";
   }> = ({ label, currentSide }) => (
     <button
-      className={`flex-1 py-2 font-semibold transition-colors duration-200 ${
-        currentSide === "Buy"
-          ? "bg-green-600 hover:bg-green-500"
-          : "bg-red-600 hover:bg-red-500"
-      } rounded-lg shadow-md text-white`}
+      className={`flex-1 py-2 font-semibold transition-colors duration-200 ${currentSide === "Buy"
+        ? "bg-green-600 hover:bg-green-500"
+        : "bg-red-600 hover:bg-red-500"
+        } rounded-lg shadow-md text-white`}
       onClick={() =>
         console.log(
           `${label} ${amount} BTC at ${price} USDT`
@@ -603,11 +601,10 @@ const TradePanel: React.FC = () => {
   const TabButton: React.FC<{ name: "Limit" | "Market" | "Stop-Limit" }> =
     ({ name }) => (
       <button
-        className={`flex-1 text-sm py-2 px-4 transition-colors duration-200 ${
-          tab === name
-            ? "border-b-2 border-yellow-600 text-gray-900"
-            : "text-gray-500 hover:text-gray-900"
-        }`}
+        className={`flex-1 text-sm py-2 px-4 transition-colors duration-200 ${tab === name
+          ? "border-b-2 border-yellow-600 text-gray-900"
+          : "text-gray-500 hover:text-gray-900"
+          }`}
         onClick={() => setTab(name)}
       >
         {name}
@@ -646,21 +643,19 @@ const TradePanel: React.FC = () => {
       {/* buy / sell */}
       <div className="flex space-x-2 mb-4">
         <button
-          className={`flex-1 py-2 rounded-lg font-semibold transition-colors ${
-            side === "Buy"
-              ? "bg-green-600/20 text-green-600"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
+          className={`flex-1 py-2 rounded-lg font-semibold transition-colors ${side === "Buy"
+            ? "bg-green-600/20 text-green-600"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
           onClick={() => setSide("Buy")}
         >
           Buy
         </button>
         <button
-          className={`flex-1 py-2 rounded-lg font-semibold transition-colors ${
-            side === "Sell"
-              ? "bg-red-600/20 text-red-600"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
+          className={`flex-1 py-2 rounded-lg font-semibold transition-colors ${side === "Sell"
+            ? "bg-red-600/20 text-red-600"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
           onClick={() => setSide("Sell")}
         >
           Sell
@@ -737,8 +732,27 @@ export default function Page() {
   );
   const [markets, setMarkets] =
     useState<Market[]>(initialMarkets);
+  const [recentTrades, setRecentTrades] = useState<
+    { price: string; amount: string; isBuy: boolean; time: string }[]
+  >([]);
 
   useEffect(() => {
+    // Generate recent trades on client side only
+    const trades = Array.from({ length: 20 }).map(() => {
+      const price = (93700 + Math.random() * 100).toFixed(2);
+      const amount = (Math.random() * 0.005 + 0.001).toFixed(4);
+      const isBuy = Math.random() > 0.5;
+      const time = `${Math.floor(Math.random() * 24)
+        .toString()
+        .padStart(2, "0")}:${Math.floor(Math.random() * 60)
+          .toString()
+          .padStart(2, "0")}:${Math.floor(Math.random() * 60)
+            .toString()
+            .padStart(2, "0")}`;
+      return { price, amount, isBuy, time };
+    });
+    setRecentTrades(trades);
+
     const interval = setInterval(() => {
       setMarkets((prevMarkets) =>
         prevMarkets.map((market) => {
@@ -814,46 +828,20 @@ export default function Page() {
               Recent Trades
             </h3>
             <div className="h-full overflow-y-auto custom-scrollbar-light text-xs text-gray-700">
-              {Array.from({ length: 20 }).map((_, i) => {
-                const price = (
-                  68700 + Math.random() * 100
-                ).toFixed(2);
-                const amount = (
-                  Math.random() * 0.005 + 0.001
-                ).toFixed(4);
-                const isBuy = Math.random() > 0.5;
-                const color = isBuy
-                  ? "text-green-600"
-                  : "text-red-600";
-                const time = `${Math.floor(
-                  Math.random() * 24
-                )
-                  .toString()
-                  .padStart(2, "0")}:${Math.floor(
-                  Math.random() * 60
-                )
-                  .toString()
-                  .padStart(2, "0")}:${Math.floor(
-                  Math.random() * 60
-                )
-                  .toString()
-                  .padStart(2, "0")}`;
-
-                return (
-                  <div
-                    key={i}
-                    className="flex justify-between py-1 border-b border-gray-200 last:border-b-0"
-                  >
-                    <span className={color}>
-                      {price}
-                    </span>
-                    <span>{amount}</span>
-                    <span className="text-gray-500">
-                      {time}
-                    </span>
-                  </div>
-                );
-              })}
+              {recentTrades.map((trade, i) => (
+                <div
+                  key={i}
+                  className="flex justify-between py-1 border-b border-gray-200 last:border-b-0"
+                >
+                  <span className={trade.isBuy ? "text-green-600" : "text-red-600"}>
+                    {trade.price}
+                  </span>
+                  <span>{trade.amount}</span>
+                  <span className="text-gray-500">
+                    {trade.time}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
