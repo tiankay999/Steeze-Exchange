@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "app/utils/paystack.js"  ],
   "exclude": ["node_modules"]
 }

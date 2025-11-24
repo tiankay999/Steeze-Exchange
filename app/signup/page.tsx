@@ -1,35 +1,68 @@
 "use client";
-
 import Link from "next/link";
 import React, { useState } from "react";
+import  { useRouter } from "next/navigation";
 
 export default function SignupPage() {
-  const [fullName, setFullName] = useState("");
-  const [userName, setUserName] = useState("");
+  const [name, setFullName] = useState("");
+  const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const[loading,setLoading]=useState(false)
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [loading, setLoading] = useState(false)
+   const router = useRouter();    
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true)
 
     if (password !== confirmPassword) {
       setError("Passwords do not match,Try again");
+      setLoading(false);
       return;
     }
 
-    // TODO: send signup data to backend
-    console.log({
-      fullName,
-      userName,
-      email,
-      password,
-      confirmPassword,
-    });
-  };
+    try {
+      const res = await fetch("http://localhost:5007/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name,
+          username,
+          email,
+          password,
+          confirmPassword
+        })
+      }
+
+
+      )
+       router.push("/login")
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Registration failed")
+      }
+
+      // Registration successful - redirect or show success message
+      const data = await res.json();
+      console.log("Registration successful:", data);
+      // TODO: Redirect to login or dashboard
+    }
+    catch (err: any) {
+      console.log(err)
+      setError(err.message || "Something went wrong, try again")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+
 
   return (
     <main className="min-h-screen w-full bg-slate-900/60 flex items-center justify-center bg-[url('/blurry.png')]">
@@ -75,7 +108,7 @@ export default function SignupPage() {
             <input
               type="text"
               required
-              value={fullName}
+              value={name}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Enter your name"
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent"
@@ -88,7 +121,7 @@ export default function SignupPage() {
             <input
               type="text"
               required
-              value={userName}
+              value={username}
               onChange={(e) => setUserName(e.target.value)}
               placeholder="@steeze_tech"
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent"
@@ -139,12 +172,12 @@ export default function SignupPage() {
           )}
 
           {/* Submit */}
-          <Link  href="/login" className="text-black italic  ">Already have an account?? Login</Link>
+          <Link href="/login" className="text-black italic  ">Already have an account?? Login</Link>
           <button
             type="submit"
             className="w-full rounded-lg bg-violet-500 py-2.5 text-sm font-medium text-white hover:bg-violet-600 transition mt-1"
           >
-           {loading?"Creating Account":"Create Account "}
+            {loading ? "Creating Account" : "Create Account "}
           </button>
 
           {/* Divider */}
@@ -157,10 +190,45 @@ export default function SignupPage() {
           {/* Google sign up */}
           <button
             type="button"
-            className="w-full rounded-lg border border-slate-200 bg-white py-2.5 text-sm font-medium text-slate-800 flex items-center justify-center gap-2 hover:bg-slate-50 transition"
+            className="w-full rounded-lg border border-slate-200 bg-white py-2.5 text-sm font-medium text-slate-700 flex items-center justify-center gap-2 hover:bg-slate-50 transition"
           >
-            <span className="h-4 w-4 rounded-full bg-blue-500" />
-            <span>Sign up with Google</span>
+            <svg
+              className="h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 48 48"
+              aria-hidden="true"
+            >
+              <defs>
+                <path
+                  id="a"
+                  d="M44.5 20H24v8.5h11.8C34.7 33 30.1 37.5 24 37.5c-7 0-12.6-5.6-12.6-12.6s5.6-12.6 12.6-12.6c3.4 0 6.4 1.3 8.7 3.4l5.6-5.3C37.3 6.9 31.2 4 24 4 12.1 4 2.1 14 2.1 26s10 22 21.9 22c11.7 0 20.6-8.9 20.6-21.8 0-1.2-.1-2.4-.3-3.6z"
+                />
+              </defs>
+              <clipPath id="b">
+                <use href="#a" overflow="visible" />
+              </clipPath>
+              <path
+                clipPath="url(#b)"
+                fill="#FBBC05"
+                d="M0 37V11l17 13z"
+              />
+              <path
+                clipPath="url(#b)"
+                fill="#EA4335"
+                d="M0 11l17 13 7 6.5V11z"
+              />
+              <path
+                clipPath="url(#b)"
+                fill="#34A853"
+                d="M24 44.5l6.5-6.5h14.2c-.3 1.2-.6 2.4-.8 3.6-2 3.8-5.3 6.6-9.4 8.7L24 44.5z"
+              />
+              <path
+                clipPath="url(#b)"
+                fill="#4285F4"
+                d="M44.5 20c0-.8-.1-1.6-.2-2.4l-15-11V20z"
+              />
+            </svg>
+            <span>Sign in with Google</span>
           </button>
 
           {/* Social icons row */}
@@ -194,5 +262,5 @@ export default function SignupPage() {
         </p>
       </div>
     </main>
-  );
+  )
 }

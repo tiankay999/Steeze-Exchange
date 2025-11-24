@@ -1,17 +1,29 @@
 "use client";
 
 import React, { useState } from 'react';
+import { initializePayment } from '../utils/paystack';
+export default function PaystackButton() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [amount, setAmount] = useState('');
+  const [crypto, setCrypto] = useState('BTC');
 
-export default function BuyCryptoPage() {
-    const [amount, setAmount] = useState('');
-    const [crypto, setCrypto] = useState('BTC');
+  const handlePay = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const result = await initializePayment(email, amount);
+      // Redirect user to Paystack authorization URL
+      window.location.href = result.data.authorization_url;
+    } catch (err) {
+      setError(err.message);
+    }
+    setLoading(false);
+  };
 
-    const handleBuy = (e: React.FormEvent) => {
-        e.preventDefault();
-        // Placeholder for Paystack integration
-        console.log(`Buying ${amount} worth of ${crypto}`);
         alert(`Initiating purchase of ${crypto} for ${amount}`);
-    };
+
 
     return (
         <div className="min-h-screen bg-gray-50 p-8">
@@ -25,7 +37,22 @@ export default function BuyCryptoPage() {
                     {/* Buy Form */}
                     <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
                         <h2 className="text-xl font-semibold text-gray-800 mb-6">Quick Buy</h2>
-                        <form onSubmit={handleBuy} className="space-y-6">
+                        <form onSubmit={handlePay} className="space-y-6">
+                            <div>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                    Email Address
+                                </label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 sm:text-sm text-black"
+                                    placeholder="you@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
                             <div>
                                 <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
                                     Amount (Fiat)

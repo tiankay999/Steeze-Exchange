@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Eye,
     EyeOff,
@@ -15,9 +14,52 @@ import Link from "next/link";
 
 export default function Header() {
     const [showBalance, setShowBalance] = useState(true);
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [totalBalance, setTotalBalance] = useState(0);
 
-    // Mock balance data
-    const totalBalance = 125430.25;
+
+    useEffect(() => {
+        const FetchBalance = async () => {
+            try {
+                const res = await fetch("http://localhost:5007/balance", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
+
+                if (!res.ok) {
+                    throw new Error("Failed to fetch balance");
+                }
+
+
+                const data = await res.json();
+
+                setShowBalance(data.showBalance);
+                // Assuming the API returns a balance field
+                if (data.balance !== undefined) {
+                    setTotalBalance(data.balance);
+                }
+
+            } catch (e: any) {
+                console.log(e);
+                setError(true);
+            } finally {
+                setLoading(false)
+            }
+        }
+        FetchBalance()
+    }, [])
+
+
+
+
+
+
+
+
 
     return (
         <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
