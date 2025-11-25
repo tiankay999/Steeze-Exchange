@@ -1,29 +1,34 @@
 "use client";
 
 import React, { useState } from 'react';
-import { initializePayment } from '../utils/paystack';
+import { initializePayment } from '../../utils/paystack';
 export default function PaystackButton() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [email, setEmail] = useState('');
-  const [amount, setAmount] = useState('');
-  const [crypto, setCrypto] = useState('BTC');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [email, setEmail] = useState('');
+    const [amount, setAmount] = useState('');
+    const [crypto, setCrypto] = useState('BTC');
 
-  const handlePay = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const result = await initializePayment(email, amount);
-      // Redirect user to Paystack authorization URL
-      window.location.href = result.data.authorization_url;
-    } catch (err) {
-      setError(err.message);
-    }
-    setLoading(false);
-  };
+    const handlePay = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const result = await initializePayment(email, amount);
+            // Redirect user to Paystack authorization URL
+            window.location.href = result.data.authorization_url;
+alert(`Initiating purchase of ${crypto} for ${amount}`);
 
-        alert(`Initiating purchase of ${crypto} for ${amount}`);
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unexpected error occurred');
+            }
+        }
+        setLoading(false);
+    };
 
+    
 
     return (
         <div className="min-h-screen bg-gray-50 p-8">
@@ -121,10 +126,11 @@ export default function PaystackButton() {
                                 type="submit"
                                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors duration-200"
                             >
-                                Buy {crypto}
+                                {loading ? 'Processing...' : `Buy ${crypto}`}
                             </button>
                         </form>
                     </div>
+                  
 
                     {/* Info / Market Card */}
                     <div className="space-y-6">

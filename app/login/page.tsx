@@ -29,14 +29,16 @@ export default function LoginPage() {
       
 
       const data = await response.json()
-      console.log(data)
+    
+      console.log(data.token)
       localStorage.setItem("token",data.token)
+      
       router.push("/home")
     } catch (err) {
       const msg = "Failed to Login Try Again"
       setError(msg)
     } finally {
-      setLoading(true)
+      setLoading(false)
     }
 
 
@@ -93,13 +95,14 @@ export default function LoginPage() {
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent"
             />
             <input
-              type="text"
+              type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent"
             />
+            {error && <p className="text-red-500 mt-2">{error}</p>}
             <button
               type="submit"
               className="w-full rounded-lg bg-violet-500 py-2.5 text-sm font-medium text-white hover:bg-violet-600 transition"
