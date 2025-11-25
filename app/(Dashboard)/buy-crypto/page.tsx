@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { initializePayment } from '../../utils/paystack';
+
 export default function PaystackButton() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -9,16 +10,25 @@ export default function PaystackButton() {
     const [amount, setAmount] = useState('');
     const [crypto, setCrypto] = useState('BTC');
 
-    const handlePay = async () => {
+    const handlePay = async (e: React.FormEvent) => {
+        e.preventDefault();
         setLoading(true);
         setError('');
         try {
             const result = await initializePayment(email, amount);
+            console.log("Paystack API Result:", result); // Debug log
+
             // Redirect user to Paystack authorization URL
-            window.location.href = result.data.authorization_url;
-alert(`Initiating purchase of ${crypto} for ${amount}`);
+            if (result?.data?.authorization_url) {
+                window.location.href = result.data.authorization_url;
+            } else {
+                console.error("Invalid payment response:", result);
+                throw new Error("Failed to get payment authorization URL");
+            }
+            // alert(`Initiating purchase of ${crypto} for ${amount}`);
 
         } catch (err) {
+            console.error("Payment Error:", err);
             if (err instanceof Error) {
                 setError(err.message);
             } else {
@@ -27,8 +37,6 @@ alert(`Initiating purchase of ${crypto} for ${amount}`);
         }
         setLoading(false);
     };
-
-    
 
     return (
         <div className="min-h-screen bg-gray-50 p-8">
@@ -122,15 +130,22 @@ alert(`Initiating purchase of ${crypto} for ${amount}`);
                                 </div>
                             </div>
 
+                            {error && (
+                                <div className="text-red-500 text-sm text-center">
+                                    {error}
+                                </div>
+                            )}
+
                             <button
                                 type="submit"
-                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors duration-200"
+                                disabled={loading}
+                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors duration-200 disabled:opacity-50"
                             >
                                 {loading ? 'Processing...' : `Buy ${crypto}`}
                             </button>
                         </form>
                     </div>
-                  
+
 
                     {/* Info / Market Card */}
                     <div className="space-y-6">
