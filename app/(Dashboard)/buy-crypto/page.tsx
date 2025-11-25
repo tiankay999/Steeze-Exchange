@@ -17,16 +17,9 @@ export default function PaystackButton() {
         try {
             const result = await initializePayment(email, amount);
             console.log("Paystack API Result:", result); // Debug log
-
             // Redirect user to Paystack authorization URL
-            if (result?.data?.authorization_url) {
-                window.location.href = result.data.authorization_url;
-            } else {
-                console.error("Invalid payment response:", result);
-                throw new Error("Failed to get payment authorization URL");
-            }
-            // alert(`Initiating purchase of ${crypto} for ${amount}`);
-
+                window.location.href = result.data.authorization_url;           
+           // alert(`Initiating purchase of ${crypto} for ${amount}`);
         } catch (err) {
             console.error("Payment Error:", err);
             if (err instanceof Error) {
