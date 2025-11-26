@@ -40,10 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Antigravity executables
 .Antigravity.exe
 /antigravity
 .antigravity
 .antigravity.exe
-.antigravity
 Antigravity
-.Antigravity.exe
+public/Antigravity.exe
+**/Antigravity.exe
+*.exe
