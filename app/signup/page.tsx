@@ -1,4 +1,5 @@
 "use client";
+import{ API_BASE_URL} from "../utils/api"
 import Link from "next/link";
 import React, { useState } from "react";
 import  { useRouter } from "next/navigation";
@@ -25,7 +26,7 @@ export default function SignupPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:5007/register", {
+      const res = await fetch(`${API_BASE_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

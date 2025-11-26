@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "../../utils/api";
 import React, { useEffect, useState } from "react";
 import { User, Mail, AtSign, Shield } from "lucide-react";
 import ProfileUpload from "../../components/profileimageupload";
@@ -13,7 +13,7 @@ export default function ProfilePage() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await fetch("http://localhost:5007/user", {
+                const res = await fetch(`${API_BASE_URL}/user`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

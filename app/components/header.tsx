@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect } from "react";
 import {
     Eye,
@@ -35,7 +36,7 @@ export default function Header() {
                     return; 
                 }
 
-                const res = await fetch("http://localhost:5007/check-balance", {
+                const res = await fetch(`${API_BASE_URL}/check-balance`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

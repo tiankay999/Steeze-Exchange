@@ -1,6 +1,6 @@
 // components/ProfileUpload.tsx
 'use client';
-
+import{ API_BASE_URL} from"../utils/api"
 import React, { useState, ChangeEvent, useRef } from 'react';
 import { User, Camera } from 'lucide-react';
 
@@ -47,7 +47,7 @@ export default function ProfileUpload() {
         formData.append('profileImage', file);
 
         try {
-            const response = await fetch('http://localhost:5007/profile-upload', {
+            const response = await fetch(`${API_BASE_URL}/profile-upload`, {
                 method: 'POST',
                 body: formData,
             });
