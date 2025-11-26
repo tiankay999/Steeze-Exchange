@@ -54,7 +54,7 @@ interface CustomTooltipProps {
 }
 
 // ---------- MOCK DATA ----------
-const username = "Christian Asante";
+
 const initialMarkets: Market[] = [
   {
     symbol: "BTC/USDT",
@@ -173,12 +173,14 @@ interface MarketListProps {
   markets: Market[];
   onSelectMarket: (m: Market) => void;
   activeMarket: Market;
+  setUsername: (username: string) => void;
 }
 
 const MarketList: React.FC<MarketListProps> = ({
   markets,
   onSelectMarket,
   activeMarket,
+  setUsername,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -190,9 +192,54 @@ const MarketList: React.FC<MarketListProps> = ({
       m.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("http://localhost:5007/user", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+
+        if (!response.ok) {
+          console.error("Failed to fetch user:", response.status, response.statusText);
+          return;
+        }
+
+        const data = await response.json();
+        console.log("User data received:", data);
+        console.log("Username from API:", data.username);
+        setUsername(data.username);
+        console.log("Username state updated");
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        const msg = error as Error;
+        console.error("Error message:", msg.message);
+      }
+    };
+
+    fetchUser();
+  }, [setUsername]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow-xl overflow-hidden">
-      <div className="p-3 border-b border-gray-200 flex items-center">
+    <div className="flex flex-col h-full bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white flex items-center">
         <div className="relative w-full">
           <input
             type="text"
@@ -205,7 +252,7 @@ const MarketList: React.FC<MarketListProps> = ({
         </div>
       </div>
 
-      <div className="text-xs text-gray-600 grid grid-cols-[1fr_auto_auto] gap-2 px-3 py-2 border-b border-gray-200">
+      <div className="text-xs font-semibold text-gray-600 grid grid-cols-[1fr_auto_auto] gap-2 px-4 py-3 border-b border-gray-200 bg-gray-50">
         <span>Pair</span>
         <span className="text-right">Price (USDT)</span>
         <span className="text-right w-14">24h %</span>
@@ -283,7 +330,7 @@ const MarketList: React.FC<MarketListProps> = ({
 const ChartHeader: React.FC<{ market: Market }> = ({
   market,
 }) => (
-  <div className="p-4 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center">
+  <div className="p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white flex flex-col md:flex-row justify-between items-start md:items-center">
     <div className="flex items-center mb-2 md:mb-0">
       <img
         src={market.iconUrl}
@@ -492,8 +539,8 @@ const OrderBook: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-3 h-full flex flex-col">
-      <h3 className="text-gray-900 text-lg font-semibold mb-3">
+    <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-5 h-full flex flex-col">
+      <h3 className="text-gray-900 text-lg font-bold mb-4">
         Order Book
       </h3>
       <div className="flex justify-between text-xs text-gray-600 border-b border-gray-200 pb-1 mb-1">
@@ -639,7 +686,7 @@ const TradePanel: React.FC = () => {
   );
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-4 h-full flex flex-col">
+    <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-5 h-full flex flex-col">
       {/* buy / sell */}
       <div className="flex space-x-2 mb-4">
         <button
@@ -727,6 +774,7 @@ const TradePanel: React.FC = () => {
 // ---------- MAIN PAGE COMPONENT ----------
 
 export default function Page() {
+  const [username, setUsername] = useState("");
   const [activeMarket, setActiveMarket] = useState<Market>(
     initialMarkets[0]
   );
@@ -787,8 +835,10 @@ export default function Page() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans p-4 md:p-6 lg:p-8">
-      <style>{`
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
         .custom-scrollbar-light::-webkit-scrollbar {
           width: 6px;
         }
@@ -804,57 +854,103 @@ export default function Page() {
         }
       `}</style>
 
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-6 border-b border-yellow-600/50 pb-2">
-        Welcome {username} to Steeze Exchange
-      </h1>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-140px)]">
-        <div className="lg:col-span-3 h-full">
-          <MarketList
-            markets={markets}
-            onSelectMarket={handleSelectMarket}
-            activeMarket={activeMarket}
-          />
-        </div>
-
-        <div className="lg:col-span-6 flex flex-col space-y-6">
-          <div className="bg-white rounded-lg shadow-xl h-2/3 min-h-[400px]">
-            <ChartHeader market={activeMarket} />
-            <ChartArea />
-          </div>
-
-          <div className="bg-white rounded-lg shadow-xl h-1/3 p-4">
-            <h3 className="text-gray-900 text-lg font-semibold mb-3">
-              Recent Trades
-            </h3>
-            <div className="h-full overflow-y-auto custom-scrollbar-light text-xs text-gray-700">
-              {recentTrades.map((trade, i) => (
-                <div
-                  key={i}
-                  className="flex justify-between py-1 border-b border-gray-200 last:border-b-0"
-                >
-                  <span className={trade.isBuy ? "text-green-600" : "text-red-600"}>
-                    {trade.price}
-                  </span>
-                  <span>{trade.amount}</span>
-                  <span className="text-gray-500">
-                    {trade.time}
-                  </span>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50" style={{ fontFamily: 'Inter, sans-serif' }}>
+        {/* Professional Header Section */}
+        <div className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-amber-500 shadow-lg">
+          <div className="max-w-[1920px] mx-auto px-6 py-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-white tracking-tight mb-1">
+                  Welcome back, {username || "Trader"}
+                </h1>
+                <p className="text-yellow-50 text-sm font-medium">
+                  Steeze Exchange Trading Dashboard
+                </p>
+              </div>
+              <div className="hidden md:flex items-center space-x-4">
+                <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 text-white">
+                  <div className="text-xs text-yellow-50">Market Status</div>
+                  <div className="text-sm font-semibold flex items-center">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                    Active
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-3 flex flex-col space-y-6">
-          <div className="h-1/2 min-h-[300px]">
-            <OrderBook />
-          </div>
-          <div className="h-1/2 min-h-[300px]">
-            <TradePanel />
+        {/* Main Content Area */}
+        <div className="max-w-[1920px] mx-auto px-6 py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Market List - Left Sidebar */}
+            <div className="lg:col-span-3">
+              <div className="sticky top-6">
+                <MarketList
+                  markets={markets}
+                  onSelectMarket={handleSelectMarket}
+                  activeMarket={activeMarket}
+                  setUsername={setUsername}
+                />
+              </div>
+            </div>
+
+            {/* Chart and Recent Trades - Center */}
+            <div className="lg:col-span-6 flex flex-col space-y-6">
+              {/* Chart Section */}
+              <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                <ChartHeader market={activeMarket} />
+                <ChartArea />
+              </div>
+
+              {/* Recent Trades Section */}
+              <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-gray-900 text-lg font-bold">
+                    Recent Trades
+                  </h3>
+                  <div className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    Live Updates
+                  </div>
+                </div>
+                <div className="overflow-y-auto custom-scrollbar-light max-h-[280px]">
+                  <div className="grid grid-cols-3 gap-4 text-xs font-semibold text-gray-600 pb-2 border-b border-gray-200 mb-2">
+                    <span>Price (USDT)</span>
+                    <span className="text-center">Amount (BTC)</span>
+                    <span className="text-right">Time</span>
+                  </div>
+                  {recentTrades.map((trade, i) => (
+                    <div
+                      key={i}
+                      className="grid grid-cols-3 gap-4 py-2 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors text-sm"
+                    >
+                      <span className={`font-semibold ${trade.isBuy ? "text-green-600" : "text-red-600"}`}>
+                        {trade.price}
+                      </span>
+                      <span className="text-gray-700 text-center">{trade.amount}</span>
+                      <span className="text-gray-500 text-right text-xs">
+                        {trade.time}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Order Book and Trade Panel - Right Sidebar */}
+            <div className="lg:col-span-3 flex flex-col space-y-6">
+              <div className="sticky top-6 space-y-6">
+                <OrderBook />
+                <TradePanel />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
+function fetchUser() {
+  throw new Error("Function not implemented.");
+}
+

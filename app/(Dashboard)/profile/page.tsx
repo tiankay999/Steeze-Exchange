@@ -1,18 +1,57 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { User, Mail, AtSign, Shield } from "lucide-react";
+import ProfileUpload from "../../components/profileimageupload";
 
 export default function ProfilePage() {
-    // Mock User Data
-    const user = {
-        fullName: "Eduard Pantazi",
-        username: "@eduard_p",
-        email: "eduard@steezecoin.com",
-        role: "Administrator",
-        avatarUrl:
-            "https://images.unsplash.com/photo-1628157588553-5eeea00af15c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80",
-    };
+    const [username, setUsername] = useState('');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await fetch("http://localhost:5007/user", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    },
+                });
+
+                if (!res.ok) {
+                    console.error("Failed to fetch profile:", res.status, res.statusText);
+                    return;
+                }
+
+                const data = await res.json();
+                console.log("Profile data received:", data);
+                setUsername(data?.username ?? "");
+                setName(data?.name ?? "");
+                setEmail(data?.email ?? "");
+
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 font-sans p-4 md:p-6 lg:p-8 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading profile...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans p-4 md:p-6 lg:p-8">
@@ -33,22 +72,20 @@ export default function ProfilePage() {
                     <div className="h-32 bg-gradient-to-r from-yellow-500 to-yellow-600"></div>
                     <div className="px-6 pb-6">
                         <div className="relative flex justify-between items-end -mt-12 mb-6">
-                            <img
-                                src={user.avatarUrl}
-                                alt={user.fullName}
-                                className="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover"
-                            />
+                            <div className="w-24 h-24 rounded-full border-4 border-white shadow-md bg-gradient-to-br from-yellow-400 to-yellow-600 overflow-hidden">
+                                <ProfileUpload />
+                            </div>
                             <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded border border-yellow-200">
-                                {user.role}
+                                Trader
                             </span>
                         </div>
 
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-2xl font-bold text-gray-900">
-                                    {user.fullName}
+                                    {name || "Guest User"}
                                 </h2>
-                                <p className="text-gray-500">{user.username}</p>
+                                <p className="text-gray-500">{username || "@guest"}</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -61,7 +98,7 @@ export default function ProfilePage() {
                                             Full Name
                                         </p>
                                         <p className="text-sm font-medium text-gray-900">
-                                            {user.fullName}
+                                            {name || "Not available"}
                                         </p>
                                     </div>
                                 </div>
@@ -75,7 +112,7 @@ export default function ProfilePage() {
                                             Username
                                         </p>
                                         <p className="text-sm font-medium text-gray-900">
-                                            {user.username}
+                                            {username || "Not available"}
                                         </p>
                                     </div>
                                 </div>
@@ -89,7 +126,7 @@ export default function ProfilePage() {
                                             Email Address
                                         </p>
                                         <p className="text-sm font-medium text-gray-900">
-                                            {user.email}
+                                            {email || "Not available"}
                                         </p>
                                     </div>
                                 </div>
@@ -103,7 +140,7 @@ export default function ProfilePage() {
                                             Role
                                         </p>
                                         <p className="text-sm font-medium text-gray-900">
-                                            {user.role}
+                                            Trader
                                         </p>
                                     </div>
                                 </div>

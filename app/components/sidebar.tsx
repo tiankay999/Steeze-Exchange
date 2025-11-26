@@ -1,27 +1,74 @@
 "use client";
+import React, { useEffect, useState } from 'react';
+import { User } from 'lucide-react';
 
 export default function Sidebar() {
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("http://localhost:5007/user", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          },
+        });
+
+        if (!res.ok) {
+          console.error("Failed to fetch profile:", res.status, res.statusText);
+          return;
+        }
+
+        const data = await res.json();
+        console.log("Sidebar profile data:", data);
+        setUsername(data?.username ?? "");
+        setName(data?.name ?? "");
+        setProfileImage(data?.profileImage ?? null);
+
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   return (
     <aside className="bg-white h-screen shadow-xl px-3 w-60 overflow-y-auto">
       <div className="space-y-6 md:space-y-10 mt-10">
         {/* Logo */}
         <h1 className="font-bold text-4xl md:text-xl text-center text-black italic">
-          Steeze-Exchange<span className="text-emerald-300    ">.</span>
+          Steeze-Exchange<span className="text-emerald-300">.</span>
         </h1>
 
         {/* Profile */}
         <div id="profile" className="space-y-3">
           <a href="/profile" className="block group">
-            <img
-              src="https://images.unsplash.com/photo-1628157588553-5eeea00af15c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80"
-              alt="Avatar user"
-              className="w-10 md:w-16 rounded-full mx-auto group-hover:scale-105 transition-transform duration-200"
-            />
+            <div className="w-10 md:w-16 h-10 md:h-16 rounded-full mx-auto group-hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center overflow-hidden">
+              {loading ? (
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              ) : profileImage ? (
+                <img
+                  src={profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-6 h-6 text-white" />
+              )}
+            </div>
             <div className="mt-3">
               <h2 className="font-medium text-xs md:text-sm text-center text-teal-500 group-hover:text-teal-600 transition-colors">
-                Eduard Pantazi
+                {name || "Guest User"}
               </h2>
-              <p className="text-xs text-gray-500 text-center">Administrator</p>
+              <p className="text-xs text-gray-500 text-center">{username ? `@${username}` : "Trader"}</p>
             </div>
           </a>
         </div>
@@ -148,29 +195,6 @@ export default function Sidebar() {
               <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z" />
             </svg>
             <span>P2P Trade</span>
-          </a>
-
-
-
-
-
-          <a
-            href="#"
-            className="text-sm font-medium text-gray-700 py-2 px-2 hover:bg-teal-500 hover:text-white hover:scale-105 rounded-md transition duration-150 ease-in-out"
-          >
-            <svg
-              className="w-6 h-6 fill-current inline-block mr-2"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                clipRule="evenodd"
-              ></path>
-            </svg>
-           
           </a>
         </nav>
       </div>

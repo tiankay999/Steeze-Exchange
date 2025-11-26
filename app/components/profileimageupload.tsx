@@ -1,110 +1,117 @@
 // components/ProfileUpload.tsx
-'use client'; 
+'use client';
 
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, useRef } from 'react';
+import { User, Camera } from 'lucide-react';
 
 // Define the expected structure for a successful API response
 interface UploadResponse {
-  message: string;
-  filePath: string;
-  fileName: string;
+    message: string;
+    filePath: string;
+    fileName: string;
 }
 
 export default function ProfileUpload() {
-    // State to hold the selected file. Can be a File object or null.
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [message, setMessage] = useState<string>('');
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     /**
-     * Handles file selection from the input field.
-     * @param event The ChangeEvent from the input element.
+     * Handles file selection and creates a preview
      */
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setMessage('');
-        // Check if files were selected and take the first one
         if (event.target.files && event.target.files.length > 0) {
-            setSelectedFile(event.target.files[0]);
-        } else {
-            setSelectedFile(null);
+            const file = event.target.files[0];
+            setSelectedFile(file);
+
+            // Create preview URL
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+
+            // Auto-upload when file is selected
+            uploadFile(file);
         }
     };
 
     /**
-     * Handles the form submission and file upload.
-     * @param event The FormEvent from the form element.
+     * Handles the file upload
      */
-    const handleUpload = async (event: FormEvent) => {
-        event.preventDefault();
-        
-        if (!selectedFile) {
-            setMessage('Please select a file first!');
-            return;
-        }
-
+    const uploadFile = async (file: File) => {
         setLoading(true);
-        setMessage('Uploading...');
 
-        // 1. Create FormData object
         const formData = new FormData();
-        // The key 'profileImage' must match the field name in the Multer config
-        formData.append('profileImage', selectedFile);
+        formData.append('profileImage', file);
 
         try {
-            // 2. Send request to the backend
-            const response = await fetch('http://localhost:5000/api/profile/upload', {
+            const response = await fetch('http://localhost:5007/profile-upload', {
                 method: 'POST',
-                // Important: Do NOT set Content-Type header when using FormData with fetch.
                 body: formData,
             });
 
-            // 3. Process the response
             const data: UploadResponse = await response.json();
 
             if (response.ok) {
-                setMessage(`Upload Successful! File saved as: ${data.fileName}`);
+                console.log('Upload successful:', data.fileName);
                 // TODO: Update user state/database with data.filePath
             } else {
-                // Assuming the backend sends an { error: string } for failures
-                const errorData = data as unknown as { error: string }; 
-                setMessage(`Upload Failed: ${errorData.error || 'Unknown server error'}`);
+                const errorData = data as unknown as { error: string };
+                console.error('Upload failed:', errorData.error);
+                // Reset on error
+                setPreviewUrl(null);
+                setSelectedFile(null);
             }
         } catch (error) {
-            // Type assertion for network error objects
-            setMessage(`Network Error: ${(error as Error).message}`);
+            console.error('Network error:', (error as Error).message);
+            // Reset on error
+            setPreviewUrl(null);
+            setSelectedFile(null);
         } finally {
             setLoading(false);
         }
     };
 
-    return (
-        <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
-            <h3>Upload Profile Picture (TSX)</h3>
-            <form onSubmit={handleUpload}>
-                <input
-                    type="file"
-                    name="profileImage"
-                    accept="image/png, image/jpeg, image/gif"
-                    onChange={handleFileChange}
-                />
-                <button type="submit" disabled={!selectedFile || loading} style={{ marginLeft: '10px' }}>
-                    {loading ? 'Processing...' : 'Upload Image'}
-                </button>
-            </form>
-            
-            <p style={{ 
-                marginTop: '15px', 
-                fontWeight: 'bold',
-                color: message.includes('Successful') ? 'green' : message.includes('Uploading') ? 'blue' : 'red' 
-            }}>
-                {message}
-            </p>
+    /**
+     * Triggers the file input click
+     */
+    const handleClick = () => {
+        fileInputRef.current?.click();
+    };
 
-            {selectedFile && (
-                <p>
-                    **File Ready:** {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                </p>
+    return (
+        <div className="relative w-full h-full group cursor-pointer" onClick={handleClick}>
+            {/* Hidden file input */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                name="profileImage"
+                accept="image/png, image/jpeg, image/gif, image/webp"
+                onChange={handleFileChange}
+                className="hidden"
+            />
+
+            {/* Profile Image or Default Icon */}
+            {previewUrl ? (
+                <img
+                    src={previewUrl}
+                    alt="Profile"
+                    className="w-full h-full object-cover rounded-full"
+                />
+            ) : (
+                <User className="w-full h-full text-white p-4" />
             )}
+
+            {/* Camera Overlay - appears on hover */}
+            <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                {loading ? (
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                ) : (
+                    <Camera className="w-8 h-8 text-white" />
+                )}
+            </div>
         </div>
     );
 }
