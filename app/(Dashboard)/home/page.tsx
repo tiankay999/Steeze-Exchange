@@ -239,8 +239,8 @@ const MarketList: React.FC<MarketListProps> = ({
 
   return (
     <div className="flex flex-col h-full bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white flex items-center">
-        <div className="relative w-full">
+      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div className="relative w-full mb-2">
           <input
             type="text"
             placeholder="Search coin..."
@@ -249,6 +249,12 @@ const MarketList: React.FC<MarketListProps> = ({
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+        </div>
+        <div className="flex items-center justify-center">
+          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium flex items-center">
+            <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
+            Live Data from CoinGecko
+          </span>
         </div>
       </div>
 
@@ -508,19 +514,26 @@ const ChartArea: React.FC = () => {
 
 // ---------- ORDER BOOK ----------
 
-const OrderBook: React.FC = () => {
+interface OrderBookProps {
+  activeMarket: Market;
+}
+
+const OrderBook: React.FC<OrderBookProps> = ({ activeMarket }) => {
   const [bids, setBids] = useState<Order[]>([]);
   const [asks, setAsks] = useState<Order[]>([]);
-  const currentPrice = 68735.5;
 
   useEffect(() => {
-    const generateOrders = (isBuy: boolean): Order[] =>
-      Array.from({ length: 15 })
+    const generateOrders = (isBuy: boolean): Order[] => {
+      const basePrice = activeMarket.price;
+      const spread = basePrice * 0.001; // 0.1% spread
+
+      return Array.from({ length: 15 })
         .map((_, i) => {
+          const priceOffset = (i + 1) * (spread / 3);
           const priceBase = isBuy
-            ? 68700 - i * 5
-            : 68750 + i * 5;
-          const price = parseFloat(priceBase.toFixed(2));
+            ? basePrice - spread - priceOffset
+            : basePrice + spread + priceOffset;
+          const price = parseFloat(priceBase.toFixed(basePrice > 100 ? 2 : 4));
           const amount = parseFloat(
             (Math.random() * 0.05 + 0.01).toFixed(4)
           );
@@ -533,10 +546,11 @@ const OrderBook: React.FC = () => {
         .sort((a, b) =>
           isBuy ? b.price - a.price : a.price - b.price
         );
+    };
 
     setBids(generateOrders(true));
     setAsks(generateOrders(false));
-  }, []);
+  }, [activeMarket.price, activeMarket.symbol]);
 
   return (
     <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-5 h-full flex flex-col">
@@ -545,7 +559,7 @@ const OrderBook: React.FC = () => {
       </h3>
       <div className="flex justify-between text-xs text-gray-600 border-b border-gray-200 pb-1 mb-1">
         <span>Price (USDT)</span>
-        <span>Amount (BTC)</span>
+        <span>Amount ({activeMarket.symbol.split('/')[0]})</span>
         <span>Total</span>
       </div>
 
@@ -562,7 +576,7 @@ const OrderBook: React.FC = () => {
             />
             <div className="relative grid grid-cols-3">
               <span>
-                {order.price.toFixed(2)}
+                {order.price.toFixed(activeMarket.price > 100 ? 2 : 4)}
               </span>
               <span className="text-right">
                 {order.amount.toFixed(4)}
@@ -576,7 +590,7 @@ const OrderBook: React.FC = () => {
       </div>
 
       <div className="my-2 py-1 text-center font-bold text-lg text-yellow-600 border-y border-gray-300">
-        {currentPrice.toFixed(2)}
+        {activeMarket.price.toFixed(activeMarket.price > 100 ? 2 : 4)}
       </div>
 
       {/* bids */}
@@ -592,7 +606,7 @@ const OrderBook: React.FC = () => {
             />
             <div className="relative grid grid-cols-3">
               <span>
-                {order.price.toFixed(2)}
+                {order.price.toFixed(activeMarket.price > 100 ? 2 : 4)}
               </span>
               <span className="text-right">
                 {order.amount.toFixed(4)}
@@ -783,49 +797,107 @@ export default function Page() {
   const [recentTrades, setRecentTrades] = useState<
     { price: string; amount: string; isBuy: boolean; time: string }[]
   >([]);
+  const [isLoadingCrypto, setIsLoadingCrypto] = useState(true);
 
+  // Fetch real-time crypto data from CoinGecko API
   useEffect(() => {
-    // Generate recent trades on client side only
-    const trades = Array.from({ length: 20 }).map(() => {
-      const price = (93700 + Math.random() * 100).toFixed(2);
-      const amount = (Math.random() * 0.005 + 0.001).toFixed(4);
-      const isBuy = Math.random() > 0.5;
-      const time = `${Math.floor(Math.random() * 24)
-        .toString()
-        .padStart(2, "0")}:${Math.floor(Math.random() * 60)
-          .toString()
-          .padStart(2, "0")}:${Math.floor(Math.random() * 60)
-            .toString()
-            .padStart(2, "0")}`;
-      return { price, amount, isBuy, time };
-    });
-    setRecentTrades(trades);
+    const fetchCryptoData = async () => {
+      try {
+        setIsLoadingCrypto(true);
+        const response = await fetch(
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple,cardano,dogecoin,avalanche-2,polkadot&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true&include_last_updated_at=true'
+        );
 
-    const interval = setInterval(() => {
-      setMarkets((prevMarkets) =>
-        prevMarkets.map((market) => {
-          const volatility = market.price * 0.0005;
-          const change =
-            (Math.random() * 2 - 1) * volatility;
-          const newPrice = market.price + change;
-          const newChange24h =
-            ((newPrice - market.low) / market.low) *
-            100 *
-            (Math.random() > 0.5 ? 1 : -1);
+        if (!response.ok) {
+          console.error('Failed to fetch crypto data:', response.status);
+          return;
+        }
 
-          const updated: Market = {
-            ...market,
-            price: newPrice,
-            change24h: newChange24h,
+        const data = await response.json();
+        console.log('CoinGecko API Response:', data);
+
+        // Map CoinGecko data to our Market format
+        const cryptoMapping: { [key: string]: { symbol: string; name: string; iconUrl: string } } = {
+          bitcoin: { symbol: 'BTC/USDT', name: 'Bitcoin', iconUrl: 'https://placehold.co/32x32/f7931a/ffffff?text=₿' },
+          ethereum: { symbol: 'ETH/USDT', name: 'Ethereum', iconUrl: 'https://placehold.co/32x32/627eea/ffffff?text=Ξ' },
+          solana: { symbol: 'SOL/USDT', name: 'Solana', iconUrl: 'https://placehold.co/32x32/14f195/ffffff?text=◎' },
+          binancecoin: { symbol: 'BNB/USDT', name: 'BNB', iconUrl: 'https://placehold.co/32x32/f3ba2f/ffffff?text=B' },
+          ripple: { symbol: 'XRP/USDT', name: 'Ripple', iconUrl: 'https://placehold.co/32x32/23292f/ffffff?text=X' },
+          cardano: { symbol: 'ADA/USDT', name: 'Cardano', iconUrl: 'https://placehold.co/32x32/0033ad/ffffff?text=₳' },
+          dogecoin: { symbol: 'DOGE/USDT', name: 'Dogecoin', iconUrl: 'https://placehold.co/32x32/c2a633/ffffff?text=Ð' },
+          'avalanche-2': { symbol: 'AVAX/USDT', name: 'Avalanche', iconUrl: 'https://placehold.co/32x32/e84142/ffffff?text=A' },
+          polkadot: { symbol: 'DOT/USDT', name: 'Polkadot', iconUrl: 'https://placehold.co/32x32/e6007a/ffffff?text=●' },
+        };
+
+        const updatedMarkets: Market[] = Object.entries(data).map(([coinId, coinData]: [string, any]) => {
+          const info = cryptoMapping[coinId];
+          const price = coinData.usd;
+          const change24h = coinData.usd_24h_change || 0;
+          const volume = coinData.usd_24h_vol
+            ? `${(coinData.usd_24h_vol / 1000000).toFixed(1)}M`
+            : '0M';
+
+          // Calculate approximate high/low based on current price and 24h change
+          const changeAmount = (price * Math.abs(change24h)) / 100;
+          const high = change24h >= 0 ? price : price + changeAmount;
+          const low = change24h >= 0 ? price - changeAmount : price;
+
+          return {
+            symbol: info.symbol,
+            name: info.name,
+            iconUrl: info.iconUrl,
+            price: price,
+            change24h: change24h,
+            volume: volume,
+            high: high,
+            low: low,
           };
+        });
 
-          return updated;
-        })
-      );
-    }, 3000);
+        setMarkets(updatedMarkets);
+        if (updatedMarkets.length > 0) {
+          setActiveMarket(updatedMarkets[0]);
+        }
+        setIsLoadingCrypto(false);
+      } catch (error) {
+        console.error('Error fetching crypto data:', error);
+        setIsLoadingCrypto(false);
+      }
+    };
+
+    // Initial fetch
+    fetchCryptoData();
+
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchCryptoData, 30000);
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    // Generate recent trades based on active market price
+    const generateTrades = () => {
+      const basePrice = activeMarket.price;
+      const trades = Array.from({ length: 20 }).map(() => {
+        const priceVariation = (Math.random() - 0.5) * (basePrice * 0.002); // ±0.2% variation
+        const price = (basePrice + priceVariation).toFixed(basePrice > 100 ? 2 : 4);
+        const amount = (Math.random() * 0.005 + 0.001).toFixed(4);
+        const isBuy = Math.random() > 0.5;
+        const now = new Date();
+        const time = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")}`;
+        return { price, amount, isBuy, time };
+      });
+      setRecentTrades(trades);
+    };
+
+    // Initial generation
+    generateTrades();
+
+    // Update trades every 2 seconds for realistic activity
+    const interval = setInterval(generateTrades, 2000);
+
+    return () => clearInterval(interval);
+  }, [activeMarket.price, activeMarket.symbol]);
 
   const handleSelectMarket = useCallback(
     (market: Market) => {
@@ -871,8 +943,17 @@ export default function Page() {
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 text-white">
                   <div className="text-xs text-yellow-50">Market Status</div>
                   <div className="text-sm font-semibold flex items-center">
-                    <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                    Active
+                    {isLoadingCrypto ? (
+                      <>
+                        <span className="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse"></span>
+                        Updating...
+                      </>
+                    ) : (
+                      <>
+                        <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                        Live
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -907,7 +988,7 @@ export default function Page() {
               <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-gray-900 text-lg font-bold">
-                    Recent Trades
+                    Recent Trades - {activeMarket.symbol.split('/')[0]}
                   </h3>
                   <div className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                     Live Updates
@@ -916,7 +997,7 @@ export default function Page() {
                 <div className="overflow-y-auto custom-scrollbar-light max-h-[280px]">
                   <div className="grid grid-cols-3 gap-4 text-xs font-semibold text-gray-600 pb-2 border-b border-gray-200 mb-2">
                     <span>Price (USDT)</span>
-                    <span className="text-center">Amount (BTC)</span>
+                    <span className="text-center">Amount ({activeMarket.symbol.split('/')[0]})</span>
                     <span className="text-right">Time</span>
                   </div>
                   {recentTrades.map((trade, i) => (
@@ -940,7 +1021,7 @@ export default function Page() {
             {/* Order Book and Trade Panel - Right Sidebar */}
             <div className="lg:col-span-3 flex flex-col space-y-6">
               <div className="sticky top-6 space-y-6">
-                <OrderBook />
+                <OrderBook activeMarket={activeMarket} />
                 <TradePanel />
               </div>
             </div>
