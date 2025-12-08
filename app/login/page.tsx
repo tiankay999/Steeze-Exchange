@@ -1,5 +1,5 @@
 "use client";
-import { API_BASE_URL} from "../utils/api"
+
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -16,7 +16,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -27,13 +27,13 @@ export default function LoginPage() {
       if (!response.ok) {
         throw new Error("Failed to login")
       }
-      
+
 
       const data = await response.json()
-    
+
       console.log(data.token)
-      localStorage.setItem("token",data.token)
-      
+      localStorage.setItem("token", data.token)
+
       router.push("/home")
     } catch (err) {
       const msg = "Failed to Login Try Again"

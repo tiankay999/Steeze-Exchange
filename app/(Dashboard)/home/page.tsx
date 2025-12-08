@@ -1,5 +1,5 @@
 "use client";
-import { API_BASE_URL } from "../../utils/api";
+
 import React, {
   useState,
   useEffect,
@@ -195,7 +195,7 @@ const MarketList: React.FC<MarketListProps> = ({
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/user`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

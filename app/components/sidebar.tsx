@@ -1,5 +1,5 @@
 "use client";
-import { API_BASE_URL} from "../utils/api"
+
 import React, { useEffect, useState } from 'react';
 import { User } from 'lucide-react';
 
@@ -12,7 +12,7 @@ export default function Sidebar() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/user`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

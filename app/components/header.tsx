@@ -1,5 +1,5 @@
 "use client";
-import { API_BASE_URL } from "../utils/api";
+
 import React, { useState, useEffect } from "react";
 import {
     Eye,
@@ -16,7 +16,7 @@ export default function Header() {
     // 1. SEPARATE THE STATE
     const [balance, setBalance] = useState<string | number>("0.00"); // Stores the money
     const [isVisible, setIsVisible] = useState(true); // Stores the toggle state (true/false)
-    
+
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -28,15 +28,15 @@ export default function Header() {
             try {
                 // 2. CHECK TOKEN BEFORE FETCHING
                 const token = localStorage.getItem("token");
-                
+
                 if (!token) {
                     console.warn("No token found in localStorage");
                     // Optional: Redirect to login here if strict
                     setLoading(false);
-                    return; 
+                    return;
                 }
 
-                const res = await fetch(`${API_BASE_URL}/check-balance`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/check-balance`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -57,8 +57,8 @@ export default function Header() {
                 if (data.balance !== undefined) {
                     setBalance(data.balance);
                 } else {
-                   // Fallback if API structure is different
-                   console.warn("API did not return a 'balance' field", data);
+                    // Fallback if API structure is different
+                    console.warn("API did not return a 'balance' field", data);
                 }
 
             } catch (e) {

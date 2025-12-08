@@ -1,4 +1,2 @@
 
-
-export const API_BASE_URL ="https://steeze-exchange-backend-1.onrender.com"
-   
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005";

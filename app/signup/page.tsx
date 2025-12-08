@@ -1,8 +1,8 @@
 "use client";
-import{ API_BASE_URL} from "../utils/api"
+
 import Link from "next/link";
 import React, { useState } from "react";
-import  { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
   const [name, setFullName] = useState("");
@@ -12,7 +12,7 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false)
-   const router = useRouter();    
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,7 +26,7 @@ export default function SignupPage() {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/register`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -42,7 +42,7 @@ export default function SignupPage() {
 
 
       )
-       
+
 
       if (!res.ok) {
         const data = await res.json();
