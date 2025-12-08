@@ -42,7 +42,7 @@ export default function SignupPage() {
 
 
       )
-       router.push("/login")
+       
 
       if (!res.ok) {
         const data = await res.json();
@@ -51,6 +51,7 @@ export default function SignupPage() {
 
       // Registration successful - redirect or show success message
       const data = await res.json();
+      router.push("/login")
       console.log("Registration successful:", data);
       // TODO: Redirect to login or dashboard
     }
