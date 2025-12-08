@@ -48,12 +48,12 @@ const coins: Coin[] = [
             {
                 id: "BTC",
                 name: "Bitcoin",
-                address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+                address: "14mUDQPFBYUzcMM8mM5D9H29gkVqeBTb17",
             },
             {
                 id: "BEP20",
                 name: "BNB Smart Chain (BEP20)",
-                address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                address: "0xb96892cf37e397346b9568e03bf4e667d6423783",
             },
         ],
     },
@@ -65,17 +65,17 @@ const coins: Coin[] = [
             {
                 id: "ERC20",
                 name: "Ethereum (ERC20)",
-                address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                address: "0xb96892cf37e397346b9568e03bf4e667d6423783",
             },
             {
                 id: "BEP20",
                 name: "BNB Smart Chain (BEP20)",
-                address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                address: "0xb96892cf37e397346b9568e03bf4e667d6423783",
             },
             {
                 id: "ARBITRUM",
                 name: "Arbitrum One",
-                address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                address: "0xb96892cf37e397346b9568e03bf4e667d6423783",
             },
         ],
     },
@@ -87,22 +87,22 @@ const coins: Coin[] = [
             {
                 id: "TRC20",
                 name: "Tron (TRC20)",
-                address: "TXla1234567890abcdef1234567890abcde",
+                address: "TBKgFXXbtRvRKSDhPaPDeiknP85J1Vfiu3",
             },
             {
                 id: "ERC20",
                 name: "Ethereum (ERC20)",
-                address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                address: "0xb96892cf37e397346b9568e03bf4e667d6423783",
             },
             {
                 id: "BEP20",
                 name: "BNB Smart Chain (BEP20)",
-                address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                address: "0xb96892cf37e397346b9568e03bf4e667d6423783",
             },
             {
                 id: "SOL",
                 name: "Solana",
-                address: "SolanaAddress1234567890abcdef1234567890",
+                address: "8nqrRoDe4ahHyFRgp9aLp9V31vLu3z8jwyoQbGFEefx9",
             },
         ],
     },
@@ -114,7 +114,7 @@ const coins: Coin[] = [
             {
                 id: "SOL",
                 name: "Solana",
-                address: "SolanaAddress1234567890abcdef1234567890",
+                address: "8nqrRoDe4ahHyFRgp9aLp9V31vLu3z8jwyoQbGFEefx9",
             },
         ],
     },

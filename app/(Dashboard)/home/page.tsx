@@ -253,7 +253,7 @@ const MarketList: React.FC<MarketListProps> = ({
         <div className="flex items-center justify-center">
           <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium flex items-center">
             <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
-            Live Data from CoinGecko
+            Live Coin Prices
           </span>
         </div>
       </div>
