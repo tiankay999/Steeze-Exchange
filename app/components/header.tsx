@@ -9,10 +9,15 @@ import {
     ChevronDown,
     ArrowDownLeft,
     ArrowUpRight,
+    Menu,
 } from "lucide-react";
 import Link from "next/link";
 
-export default function Header() {
+interface HeaderProps {
+    onMenuClick?: () => void;
+}
+
+export default function Header({ onMenuClick }: HeaderProps) {
     // 1. SEPARATE THE STATE
     const [balance, setBalance] = useState<string | number>("0.00"); // Stores the money
     const [isVisible, setIsVisible] = useState(true); // Stores the toggle state (true/false)
@@ -84,6 +89,12 @@ export default function Header() {
             <div className="flex items-center justify-between px-4 md:px-6 py-3 relative">
                 {/* Left: Logo */}
                 <div className="flex items-center space-x-2">
+                    <button
+                        onClick={onMenuClick}
+                        className="md:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                    >
+                        <Menu className="w-6 h-6" />
+                    </button>
                     <h1 className="font-bold text-xl md:text-2xl text-gray-900 italic">
                         Steeze<span className="text-yellow-600">.</span>
                     </h1>
