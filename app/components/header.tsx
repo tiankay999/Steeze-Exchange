@@ -18,7 +18,7 @@ interface HeaderProps {
 }
 
 export default function Header({ onMenuClick }: HeaderProps) {
-    // 1. SEPARATE THE STATE
+   
     const [balance, setBalance] = useState<string | number>("0.00"); // Stores the money
     const [isVisible, setIsVisible] = useState(true); // Stores the toggle state (true/false)
 
@@ -36,7 +36,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
                 if (!token) {
                     console.warn("No token found in localStorage");
-                    // Optional: Redirect to login here if strict
                     setLoading(false);
                     return;
                 }

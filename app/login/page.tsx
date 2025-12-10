@@ -39,8 +39,13 @@ export default function LoginPage() {
       const msg = "Failed to Login Try Again"
       setError(msg)
     } finally {
-      setLoading(false)
+       if(error){
+        setLoading(false)
+       }else{
+          setLoading(true)
+       }
     }
+    
 
 
 
@@ -48,7 +53,7 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen w-full bg-slate-900/60 flex items-center justify-center bg-[url('/blurry.png')]">
-      {/* blurred background mock (optional) */}
+      {/* blurred background  */}
       <div className="fixed inset-0 -z-10 bg-slate-900">
         <div className="h-full w-full bg-[radial-gradient(circle_at_top,_#4f46e5_0,_#020617_55%)] opacity-40" />
       </div>
@@ -60,8 +65,8 @@ export default function LoginPage() {
           <span className="text-3xl font-medium text-black mx-auto mr-5 font-serif ">
             Login
           </span>
-          {/* fake close icon to match UI */}
-          <button
+        
+            <button
             type="button"
             className="ml-auto text-slate-400 hover:text-slate-600 text-xl leading-none"
           >
@@ -110,6 +115,9 @@ export default function LoginPage() {
             >
               {loading ? "Logging In..." : "Login"}
             </button>
+            <div className="text-xs text-slate-400">
+              Don't have an account? <a href="/signup" className="text-violet-500 hover:underline">Register</a>
+            </div>  
           </div>
 
           {/* Divider */}
@@ -185,7 +193,7 @@ export default function LoginPage() {
               </svg>
             </button>
 
-            {/* GitHub Button (as the "any other svg") */}
+
             <button
               type="button"
               className="flex items-center justify-center h-12 w-12 rounded-full border border-slate-200 bg-white hover:bg-slate-50 transition"

@@ -59,7 +59,11 @@ export default function SignupPage() {
       console.log(err)
       setError(err.message || "Something went wrong, try again")
     } finally {
-      setLoading(false)
+      if (error) {
+        setLoading(false)
+      } else {
+        setLoading(true)
+      }
     }
   }
 
@@ -73,7 +77,7 @@ export default function SignupPage() {
         <div className="h-full w-full bg-[radial-gradient(circle_at_top,_#4f46e5_0,_#020617_55%)] opacity-40" />
       </div>
 
-      {/* Modal card */}
+      {/*  herer is the Modal card */}
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl px-8 py-6 border border-slate-100">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
@@ -93,6 +97,7 @@ export default function SignupPage() {
           <button
             type="button"
             className="w-full rounded-lg border border-slate-200 bg-white py-2.5 text-sm font-medium text-slate-800 hover:bg-slate-50 transition"
+            onClick={() => alert("Feature to be added soon ")}
           >
             Sign up with a wallet
           </button>
@@ -174,7 +179,7 @@ export default function SignupPage() {
           )}
 
           {/* Submit */}
-          <Link href="/login" className="text-black italic  ">Already have an account?? Login</Link>
+          <Link href="/login" className="text-black italic m-6 text-blue-500 ">Already have an account?? Login</Link>
           <button
             type="submit"
             className="w-full rounded-lg bg-violet-500 py-2.5 text-sm font-medium text-white hover:bg-violet-600 transition mt-1"
@@ -191,6 +196,7 @@ export default function SignupPage() {
 
           {/* Google sign up */}
           <button
+          onClick={() => alert("This Button is coming soon")}
             type="button"
             className="w-full rounded-lg border border-slate-200 bg-white py-2.5 text-sm font-medium text-slate-700 flex items-center justify-center gap-2 hover:bg-slate-50 transition"
           >
@@ -230,30 +236,12 @@ export default function SignupPage() {
                 d="M44.5 20c0-.8-.1-1.6-.2-2.4l-15-11V20z"
               />
             </svg>
+
             <span>Sign in with Google</span>
+          
           </button>
 
-          {/* Social icons row */}
-          <div className="flex items-center justify-center gap-5 pt-1">
-            <button
-              type="button"
-              className="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center text-xs font-semibold text-slate-800 hover:bg-slate-50"
-            >
-              
-            </button>
-            <button
-              type="button"
-              className="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center text-xs font-semibold text-slate-800 hover:bg-slate-50"
-            >
-              D
-            </button>
-            <button
-              type="button"
-              className="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center text-xs font-semibold text-slate-800 hover:bg-slate-50"
-            >
-              X
-            </button>
-          </div>
+         
         </form>
 
         {/* Terms text */}
