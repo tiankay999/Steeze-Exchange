@@ -3,6 +3,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import FormSpinner from "../components/formspinner";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -113,7 +114,7 @@ export default function LoginPage() {
               type="submit"
               className="w-full rounded-lg bg-violet-500 py-2.5 text-sm font-medium text-white hover:bg-violet-600 transition"
             >
-              {loading ? "Logging In..." : "Login"}
+              {loading ? (<FormSpinner/>) : "Login"}
             </button>
             <div className="text-xs text-slate-400">
               Don't have an account? <a href="/signup" className="text-violet-500 hover:underline">Register</a>

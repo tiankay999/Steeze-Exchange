@@ -3,6 +3,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import FormSpinner from "../components/formspinner";
 
 export default function SignupPage() {
   const [name, setFullName] = useState("");
@@ -184,7 +185,7 @@ export default function SignupPage() {
             type="submit"
             className="w-full rounded-lg bg-violet-500 py-2.5 text-sm font-medium text-white hover:bg-violet-600 transition mt-1"
           >
-            {loading ? "Creating Account" : "Create Account "}
+            {loading ? (<FormSpinner/>) : "Create Account "}
           </button>
 
           {/* Divider */}
